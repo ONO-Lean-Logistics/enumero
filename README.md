@@ -33,11 +33,9 @@ Usage of enumero:
   -variant value
         VariantName:Value1,Value2,...,VariantN
 ```
-
 ```shell
 $ enumero -package=main -name Color -values=Red,Green,Blue -variant=German:Rot,Grün,Blau
 ```
-
 ```go
 package main
 
@@ -76,7 +74,6 @@ func main() {
 }
 
 ```
-
 ```shell
 $ go run color_enumero.go test.go 
 Blue
@@ -95,7 +92,7 @@ For very big enums, a source file can be provided instead of listing all values 
 
 It is expected to look like this:
 
-```
+```raw
 ,German
 Red,Rot
 Green,Grün
@@ -106,3 +103,8 @@ That is: the first line is the header and contains an empty string (marking the 
 the names of the variants.
 
 Each following line contains a single value and its corresponding variants.
+
+### Variants
+All variants are available.
+
+The specific variant `JSON` uses variants as labels for Marshalling and Unmarshalling of JSON objects.

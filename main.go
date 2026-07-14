@@ -128,7 +128,11 @@ var {{$values}} = []{{$type}} {
 {{range .Values}}	{{valueName .}},
 {{end}}}
 
+{{$jsonFromFunc := $fromString}}
+{{$jsonToFunc := "String"}}
 {{range .Variants}}
+{{if eq .Name "JSON"}}{{$jsonFromFunc = fromVariantName .}}{{end}}
+{{if eq .Name "JSON"}}{{$jsonToFunc = "JSON"}}{{end}}
 
 var {{variantMapName .}} = map[{{$type}}]string{
 {{range $index, $variantVal := .Values}}{{$originalVal := index $.Values $index}}	{{valueName $originalVal}}:	"{{$variantVal}}", 
@@ -222,7 +226,7 @@ func (v *{{$type}}) UnmarshalText(data []byte) error {
 
 {{if .MarshalJSON}}
 func (v {{$type}}) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.String())
+	return json.Marshal(v.{{$jsonToFunc}}())
 }
 {{end}}
 
@@ -233,7 +237,7 @@ func (v *{{$type}}) UnmarshalJSON(data []byte) error {
 		return fmt.Errorf("unmarshaling json to {{$nameLower}} but it is not a string: %w", err)
 	}
 	
-	if vUnmarshaled, err := {{$fromString}}(str); err != nil {
+	if vUnmarshaled, err := {{$jsonFromFunc}}(str); err != nil {
 		return err
 	} else {
 		*v = vUnmarshaled
