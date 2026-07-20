@@ -130,9 +130,13 @@ var {{$values}} = []{{$type}} {
 
 {{$jsonFromFunc := $fromString}}
 {{$jsonToFunc := "String"}}
+{{$yamlFromFunc := $fromString}}
+{{$yamlToFunc := "String"}}
 {{range .Variants}}
 {{if eq .Name "JSON"}}{{$jsonFromFunc = fromVariantName .}}{{end}}
 {{if eq .Name "JSON"}}{{$jsonToFunc = "JSON"}}{{end}}
+{{if eq .Name "YAML"}}{{$yamlFromFunc = fromVariantName .}}{{end}}
+{{if eq .Name "YAML"}}{{$yamlToFunc = "YAML"}}{{end}}
 
 var {{variantMapName .}} = map[{{$type}}]string{
 {{range $index, $variantVal := .Values}}{{$originalVal := index $.Values $index}}	{{valueName $originalVal}}:	"{{$variantVal}}", 
@@ -209,13 +213,13 @@ var {{$structObj}} = {{$struct}}{
 
 {{if .MarshalText}}
 func (v {{$type}}) MarshalText() ([]byte, error) {
-	return []byte(v.String()), nil
+	return []byte(v.{{$yamlToFunc}}()), nil
 }
 {{end}}
 
 {{if .UnmarshalText}}
 func (v *{{$type}}) UnmarshalText(data []byte) error {
-	if vUnmarshaled, err := {{$fromString}}(string(data)); err != nil {
+	if vUnmarshaled, err := {{$yamlFromFunc}}(string(data)); err != nil {
 		return err
 	} else {
 		*v = vUnmarshaled
